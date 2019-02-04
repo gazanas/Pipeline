@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Pipeline<T> implements PipelineInterface<T>, StageInterface<Object, T> {
 
     private final OperationInterface operation;
-    public final ArrayList<StageInterface> stages;
+    private final ArrayList<StageInterface> stages;
 
     public Pipeline(StageInterface...stages) {
         this.operation = new SimpleOperation<T>();
