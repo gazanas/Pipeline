@@ -15,7 +15,6 @@ public class Main {
 
         try {
             p = p.pipe(stage1).pipe(stage2).pipe(stage3);
-            //System.out.println(p.stages);
             System.out.println(p.run(payload));
         } catch (Exception e) {
             e.printStackTrace();
