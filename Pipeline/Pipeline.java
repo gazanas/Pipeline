@@ -1,8 +1,5 @@
 package Pipeline;
 
-import javafx.stage.Stage;
-
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -10,7 +7,7 @@ import java.util.ArrayList;
 public class Pipeline<T> implements PipelineInterface<T>, StageInterface<Object, T> {
 
     private final OperationInterface operation;
-    private final ArrayList<StageInterface> stages;
+    public final ArrayList<StageInterface> stages;
 
     public Pipeline(StageInterface...stages) {
         this.operation = new SimpleOperation<T>();
@@ -33,11 +30,14 @@ public class Pipeline<T> implements PipelineInterface<T>, StageInterface<Object,
         OperationInterface operation = (OperationInterface) operationConstruct.newInstance(copy.operation);
         this.operation = operation;
 
+        Class stageClass;
+        Constructor stageConstruct;
+        StageInterface stageInstance;
         this.stages = new ArrayList();
         for(Object stage : copy.stages) {
-            Class stageClass = Class.forName(stage.getClass().getCanonicalName());
-            Constructor stageConstruct = stageClass.getConstructor();
-            StageInterface stageInstance = (StageInterface) stageConstruct.newInstance();
+            stageClass = Class.forName(stage.getClass().getCanonicalName());
+            stageConstruct = stageClass.getConstructor();
+            stageInstance = (StageInterface) stageConstruct.newInstance();
             this.stages.add(stageInstance);
         }
     }
@@ -49,17 +49,9 @@ public class Pipeline<T> implements PipelineInterface<T>, StageInterface<Object,
      *
      * @return Pipeline.Pipeline
      */
-    public Pipeline pipe(StageInterface stage) {
-        try {
-            this.stages.add(stage);
-            Pipeline pipeline = new Pipeline(this);
-            return pipeline;
-        } catch(Exception e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
-
-        return null;
+    public Pipeline pipe(StageInterface stage) throws Exception {
+        this.stages.add(stage);
+        return new Pipeline(this);
     }
 
     public Object run(T payload) {
